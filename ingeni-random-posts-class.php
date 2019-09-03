@@ -263,14 +263,6 @@ class IngeniRandomPosts {
 					
 			$plugin_dir_path = dirname(__FILE__);
 
-			if (strlen(trim($random_content_url)) == '') {
-				$post_content = $this->get_static_content();
-			} else {
-				$post_content = $this->get_random_content( $random_content_url );
-			}
-
-			$post_content .= '<br/><p>Thanks to <a href="//www.gratisography.com/" target="_blank">Ryan Mcguire and gratisography.com/</a> for awesome public domain photos and <a href="//www.cupcakeipsum.com/" target="_blank">cupcakeipsum.com</a> for the sweet Lorem Ipsum text.';
-
 			$total_colours = count($colours) - 1;
 			$total_animals = count($animals) - 1;
 			$total_verbs = count($verbs) - 1;
@@ -289,6 +281,16 @@ class IngeniRandomPosts {
 						
 				$title = $colours[$colour_idx]." ". $animals[$animal_idx]." ". $verbs[$verb_idx]." ". $adverbs[$adverb_idx];
 
+
+				// Get the random content
+				if (strlen(trim($random_content_url)) == '') {
+					$post_content = $this->get_static_content();
+				} else {
+					$post_content = $this->get_random_content( $random_content_url );
+				}
+				$post_content .= '<br/><p>Thanks to <a href="//www.gratisography.com/" target="_blank">Ryan Mcguire and gratisography.com/</a> for awesome public domain photos and <a href="//www.cupcakeipsum.com/" target="_blank">cupcakeipsum.com</a> for the sweet Lorem Ipsum text.';
+	
+				
 				// Create post object
 				$my_post = array(
 					'post_title'		=> $title,

@@ -12,7 +12,7 @@ Requires at least: 3.8
 
 Tested up to: 5.2.2
 
-Stable tag: 2019.02
+Stable tag: 2019.03
 
 
 
@@ -72,3 +72,5 @@ v2015.01 - Initial public release.
 v2019.01 - 3-Sep-2019 - Code refactored.
 
 v2019.02 - 4-Sep-2019 - Added support for random content generator sites. Defaults to Sherlock Holmes from litipsum.com
+
+v2019.03 - 4-Sep-2019 - Bug fix to correct not-so-random text.

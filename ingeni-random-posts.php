@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Ingeni Create Random Posts
-Version: 2019.02
+Version: 2019.03
 Plugin URI: http://ingeni.net
 Author: Bruce McKinnon - ingeni.net
 Author URI: http://ingeni.net
@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 v2015.02 - Original release
 v2019.01 - Code refactored and package
 v2019.02 - Added support for random content from litipsum.com - defaults to Sherlock Holmes
-
+v2019.03 - Bug fix - content wasn't random enough!
 */
 
 const ADD_RANDOM_POSTS = "Add Random Posts";

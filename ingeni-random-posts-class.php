@@ -241,7 +241,7 @@ class IngeniRandomPosts {
 		}
 	}
 
-	function create_random_posts( $max_posts, &$err_msg ) {
+	function create_random_posts( $max_posts, $random_content_url, &$err_msg ) {
 		$idx = 0;
 		try {
 			global $wpdb;
@@ -261,43 +261,16 @@ class IngeniRandomPosts {
 
 			$adverbs = array("absent-mindedly", "adventurously", "arrogantly", "anxiously", "calmly", "carefully", "carelessly", "cautiously", "bleakly", "blindly", "blissfully", "boastfully", "boldly", "bravely", "defiantly", "deliberately", "enthusiastically", "ferociously", "fervently", "fiercely", "playfully", "politely", "willfully", "wisely", "woefully", "victoriously", "violently", "vivaciously");
 					
-			$upload_dir = wp_upload_dir();
-			
-			$img_left_url = trailingslashit($upload_dir['url']) . 'gratisography-post-left.jpg';
-			$img_left_class = "alignleft";
-			$img_right_url = trailingslashit($upload_dir['url']) . 'gratisography-post-right.jpg';
-			$img_right_class = "alignright";
-			$img_left_id = $img_right_id = 0;
-			$img_alt = "Photo courtesy of gratisography.com";
-			
 			$plugin_dir_path = dirname(__FILE__);
 
-			$post_content = 
-			'<p>Ice cream lemon drops tootsie roll chocolate marzipan. Liquorice icing caramels carrot cake sugar plum. Candy canes icing brownie.</p>
-			<h2>This is a H2 Heading</h2>
-			<img src="'.$img_left_url.'" class="'.$img_left_class.'" alt="'.$img_alt.'" /><p>Macaroon lemon drops bear claw tootsie roll gingerbread brownie sugar plum. Powder candy macaroon bear claw. Cupcake biscuit cotton candy sweet roll cheesecake danish. Souffle cookie halvah fruitcake. Cake candy canes chupa chups muffin biscuit bear claw. Liquorice bonbon caramels. Caramels jelly pastry.</p>
-			<ul>
-			<li>Jelly beans</li>
-			<li>Sweet danish</li>
-			<li>Chocolate topping</li>
-			<li>Muffin</li>
-			<li>Macaroon</li>
-			</ul>
-			<img src="'.$img_right_url.'" class="'.$img_right_class.'" alt="'.$img_alt.'" /><p>Gummi bears souffle souffle pudding muffin bonbon toffee. Sugar plum candy candy pastry. Applicake macaroon sugar plum sweet jelly-o pastry chocolate cake. Cookie danish lemon drops tiramisu chocolate bar donut bonbon. Apple pie donut chocolate bar jelly beans marzipan ice cream lollipop carrot cake carrot cake.</p>
-			<h3>This is a H3 Heading</h3>
-			<p>Applicake chocolate muffin toffee icing oat cake biscuit chocolate cake donut. Oat cake candy canes cheesecake biscuit lollipop. Marshmallow chupa chups ice cream gummi bears icing marzipan.</p>
-			<ol>
-			<li>Jelly beans</li>
-			<li>Sweet danish</li>
-			<li>Chocolate topping</li>
-			<li>Muffin</li>
-			<li>Macaroon</li>
-			</ol>
-			<p>Cheesecake cupcake liquorice chupa chups wafer fruitcake caramels. Marzipan topping donut marzipan marzipan cookie. Candy cotton candy dessert chupa chups. Apple pie brownie chupa chups chocolate chocolate cake donut. Danish sugar plum powder candy souffle jelly beans. Souffle liquorice gummi bears.</p>
-			<h4>This is a H4 Heading</h4>
-			<p>Thanks to <a href="//www.gratisography.com/" target="_blank">Ryan Mcguire and gratisography.com/</a> for awesome public domain photos and <a href="//www.cupcakeipsum.com/" target="_blank">cupcakeipsum.com</a> for the sweet Lorem Ipsum text.';
+			if (strlen(trim($random_content_url)) == '') {
+				$post_content = $this->get_static_content();
+			} else {
+				$post_content = $this->get_random_content( $random_content_url );
+			}
 
-			
+			$post_content .= '<br/><p>Thanks to <a href="//www.gratisography.com/" target="_blank">Ryan Mcguire and gratisography.com/</a> for awesome public domain photos and <a href="//www.cupcakeipsum.com/" target="_blank">cupcakeipsum.com</a> for the sweet Lorem Ipsum text.';
+
 			$total_colours = count($colours) - 1;
 			$total_animals = count($animals) - 1;
 			$total_verbs = count($verbs) - 1;
@@ -337,12 +310,15 @@ class IngeniRandomPosts {
 					$this->attach_random_image($post_id);
 					// Update (or add) the custom field
 					add_post_meta( $post_id, 'random_post', 1 );
-					
-					if ($img_left_id < 1) {
-						$img_left_id = $this->random_posts_add_file_to_media_library($post_id,'gratisography-post-left.jpg',$plugin_dir_path);
-					}
-					if ($img_right_id < 1) {
-						$img_right_id = $this->random_posts_add_file_to_media_library($post_id,'gratisography-post-right.jpg',$plugin_dir_path);
+
+					// Make sure you add any intermal images ot the media library
+					if ( stripos($post_content, 'gratisography-post-left.jpg') !== false ) {
+						if ($img_left_id < 1) {
+							$img_left_id = $this->random_posts_add_file_to_media_library($post_id,'gratisography-post-left.jpg',$plugin_dir_path);
+						}
+						if ($img_right_id < 1) {
+							$img_right_id = $this->random_posts_add_file_to_media_library($post_id,'gratisography-post-right.jpg',$plugin_dir_path);
+						}
 					}
 
 					$this->fb_log ('published #'.$post_id.' = '.$title);
@@ -358,6 +334,67 @@ class IngeniRandomPosts {
 		
 		return $idx;
 	}
+
+
+	function get_random_content($url) {
+		//https://litipsum.com/api/adventures-sherlock-holmes/p
+
+		$ch = curl_init();  
+
+		curl_setopt($ch,CURLOPT_URL,$url);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+
+		$content = curl_exec($ch);
+
+		curl_close($ch);
+
+		if ( !$content ) {
+			// Fallback to static content if it fails
+			$content = $this->get_static_content();
+		}
+		return $content;
+
+	}
+
+
+	function get_static_content() {
+		$upload_dir = wp_upload_dir();
+		
+		$img_left_url = trailingslashit($upload_dir['url']) . 'gratisography-post-left.jpg';
+		$img_left_class = "alignleft";
+		$img_right_url = trailingslashit($upload_dir['url']) . 'gratisography-post-right.jpg';
+		$img_right_class = "alignright";
+		$img_left_id = $img_right_id = 0;
+		$img_alt = "Photo courtesy of gratisography.com";
+
+		$post_content = 
+			'<p>Ice cream lemon drops tootsie roll chocolate marzipan. Liquorice icing caramels carrot cake sugar plum. Candy canes icing brownie.</p>
+			<h2>This is a H2 Heading</h2>
+			<img src="'.$img_left_url.'" class="'.$img_left_class.'" alt="'.$img_alt.'" /><p>Macaroon lemon drops bear claw tootsie roll gingerbread brownie sugar plum. Powder candy macaroon bear claw. Cupcake biscuit cotton candy sweet roll cheesecake danish. Souffle cookie halvah fruitcake. Cake candy canes chupa chups muffin biscuit bear claw. Liquorice bonbon caramels. Caramels jelly pastry.</p>
+			<ul>
+			<li>Jelly beans</li>
+			<li>Sweet danish</li>
+			<li>Chocolate topping</li>
+			<li>Muffin</li>
+			<li>Macaroon</li>
+			</ul>
+			<img src="'.$img_right_url.'" class="'.$img_right_class.'" alt="'.$img_alt.'" /><p>Gummi bears souffle souffle pudding muffin bonbon toffee. Sugar plum candy candy pastry. Applicake macaroon sugar plum sweet jelly-o pastry chocolate cake. Cookie danish lemon drops tiramisu chocolate bar donut bonbon. Apple pie donut chocolate bar jelly beans marzipan ice cream lollipop carrot cake carrot cake.</p>
+			<h3>This is a H3 Heading</h3>
+			<p>Applicake chocolate muffin toffee icing oat cake biscuit chocolate cake donut. Oat cake candy canes cheesecake biscuit lollipop. Marshmallow chupa chups ice cream gummi bears icing marzipan.</p>
+			<ol>
+			<li>Jelly beans</li>
+			<li>Sweet danish</li>
+			<li>Chocolate topping</li>
+			<li>Muffin</li>
+			<li>Macaroon</li>
+			</ol>
+			<p>Cheesecake cupcake liquorice chupa chups wafer fruitcake caramels. Marzipan topping donut marzipan marzipan cookie. Candy cotton candy dessert chupa chups. Apple pie brownie chupa chups chocolate chocolate cake donut. Danish sugar plum powder candy souffle jelly beans. Souffle liquorice gummi bears.</p>
+			<h4>This is a H4 Heading</h4>';
+
+		return $post_content;
+	}
+
+
 
 	function delete_associated_media($id) {
 			$media = get_children(array(

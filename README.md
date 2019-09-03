@@ -10,9 +10,9 @@ Tags: Ingeni, Random Posts
 
 Requires at least: 3.8
 
-Tested up to: 4.2
+Tested up to: 5.2.2
 
-Stable tag: 2019.01
+Stable tag: 2019.02
 
 
 
@@ -69,4 +69,6 @@ Thanks to Ryan Mcguire and gratisography.com for awesome public domain photos an
 
 v2015.01 - Initial public release.
 
-v2019.02 - 4/9/2019 - Code refactored.
+v2019.01 - 3-Sep-2019 - Code refactored.
+
+v2019.02 - 4-Sep-2019 - Added support for random content generator sites. Defaults to Sherlock Holmes from litipsum.com

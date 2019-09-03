@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Ingeni Create Random Posts
-Version: 2019.01
+Version: 2019.02
 Plugin URI: http://ingeni.net
 Author: Bruce McKinnon - ingeni.net
 Author URI: http://ingeni.net
@@ -26,12 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 v2015.02 - Original release
 v2019.01 - Code refactored and package
+v2019.02 - Added support for random content from litipsum.com - defaults to Sherlock Holmes
+
 */
 
 const ADD_RANDOM_POSTS = "Add Random Posts";
 const DELETE_RANDOM_POSTS =  "Delete Random Posts";
 const INGENI_RANDOM_POSTS_QTY = "ingeni_random_posts_qty";
-
+const INGENI_RANDOM_CONTENT_URL = "ingeni_random_posts_content_url";
 
 require_once ('ingeni-random-posts-class.php');
 
@@ -71,10 +73,11 @@ function random_posts_options_page() {
 		$errMsg = '';
 		
 		update_option(INGENI_RANDOM_POSTS_QTY, $_POST['random_posts_qty'] );
+		update_option(INGENI_RANDOM_CONTENT_URL, $_POST[INGENI_RANDOM_CONTENT_URL] );
 		
 		switch ($_REQUEST['btn_random_posts_submit']) {
 			case ADD_RANDOM_POSTS :
-				$random_count = $ingeniRandomPosts->create_random_posts( get_option(INGENI_RANDOM_POSTS_QTY, 10), $errMsg);
+				$random_count = $ingeniRandomPosts->create_random_posts( get_option(INGENI_RANDOM_POSTS_QTY, 10), get_option(INGENI_RANDOM_CONTENT_URL, ''), $errMsg );
 				
 				if ( $random_count >= 0 ) {
 					echo('<div class="updated"><p><strong>'.$random_count.' posts created...</strong></p></div>');
@@ -100,11 +103,17 @@ function random_posts_options_page() {
 		echo('<form action="'. str_replace( '%7E', '~', $_SERVER['REQUEST_URI']).'" method="post" name="random_posts_options_page">'); 
 			echo('<input type="hidden" name="random_posts_edit_hidden" value="Y">');
 			
-			echo('<table class="form-table" style="width:90%;max-width:400px;">');
+			echo('<table class="form-table" style="max-width:90%;width:800px;">');
 			
 			echo('<tr valign="top">'); 
-				echo('<td>Number of posts to generate (1-20)</td><td><input type="number" name="random_posts_qty" min="1" max="20" value="'.get_option(INGENI_RANDOM_POSTS_QTY, 10).'"></td>'); 
+				echo('<td style="width:250px;">Number of posts to generate (1-20)</td><td><input type="number" name="random_posts_qty" min="1" max="20" value="'.get_option(INGENI_RANDOM_POSTS_QTY, 10).'"></td>'); 
 			echo('</tr>');
+			
+			echo('<tr valign="top">'); 
+				echo('<td style="width:250px;">Content geneator URL (leave blank for static content)</td><td><input type="text" style="width:100%;" name="'.INGENI_RANDOM_CONTENT_URL.'" value="'.get_option(INGENI_RANDOM_CONTENT_URL, 'https://litipsum.com/api/adventures-sherlock-holmes/p').'"></td>'); 
+			echo('</tr>');
+			
+
 			
 			echo('<tr valign="top">'); 
 				echo('<td><input type="submit" value="' . ADD_RANDOM_POSTS . '" name="btn_random_posts_submit"></td>');

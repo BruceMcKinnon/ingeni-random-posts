@@ -85,11 +85,39 @@ class IngeniRandomPosts {
 		}
 	}
 
-	function get_random_category() {
+	function get_random_category($force_category = '') {
 		try {
 			$category_ids = get_terms( 'category', 'fields=ids&hide_empty=0' );
 
+			if (strlen($force_category) > 0) {
+				$cats = get_terms( 'category');
+
+				$found_it = false;
+				if ($cats) {
+					foreach($cats as $cat) {
+						if (stripos($cat->name,$force_category) !== false) {
+							// We found it, so get out of here.
+							$found_it = true;
+							$cat_ary = array($cat->term_id);
+
+							return $cat_ary;
+							exit;
+						}
+					}
+				}
+				if (!$found_it) {
+					// Manually add the category, cause it is not in there.
+					$new_id = wp_create_category( $force_category );
+					$cat_ary = array($new_id);
+
+					return $cat_ary;
+					exit;
+				}
+			}
+
+			// We  are forcing a category, so go ahead and get a random list.
 			if ( !$category_ids || (count($category_ids) < 1)  ) {
+			
 				$cat_names = array('Politics', 'Sport', 'Business', 'World News', 'Australia' );
 
 				foreach($cat_names as $cat) {
@@ -241,7 +269,7 @@ class IngeniRandomPosts {
 		}
 	}
 
-	function create_random_posts( $max_posts, $random_content_url, &$err_msg ) {
+	function create_random_posts( $max_posts, $random_content_url, $category, &$err_msg ) {
 		$idx = 0;
 		try {
 			global $wpdb;
@@ -297,7 +325,7 @@ class IngeniRandomPosts {
 					'post_content'	=> $post_content,
 					'post_status'		=> 'publish',
 					'post_author'		=> $this->get_random_author(),
-					'post_category'	=> $this->get_random_category(),
+					'post_category'	=> $this->get_random_category($category),
 					'post_date' 		=> $post_date,
 					'tags_input'		=> $this->get_random_tags()
 				);		

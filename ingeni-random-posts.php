@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Ingeni Create Random Posts
-Version: 2019.03
+Version: 2019.04
 Plugin URI: http://ingeni.net
 Author: Bruce McKinnon - ingeni.net
 Author URI: http://ingeni.net
@@ -28,12 +28,14 @@ v2015.02 - Original release
 v2019.01 - Code refactored and package
 v2019.02 - Added support for random content from litipsum.com - defaults to Sherlock Holmes
 v2019.03 - Bug fix - content wasn't random enough!
+v2019.04 - Added option to set a specific post category, rather than just using a random one.
 */
 
 const ADD_RANDOM_POSTS = "Add Random Posts";
 const DELETE_RANDOM_POSTS =  "Delete Random Posts";
 const INGENI_RANDOM_POSTS_QTY = "ingeni_random_posts_qty";
 const INGENI_RANDOM_CONTENT_URL = "ingeni_random_posts_content_url";
+const INGENI_RANDOM_CATEGORY = "ingeni_random_posts_category";
 
 require_once ('ingeni-random-posts-class.php');
 
@@ -74,10 +76,11 @@ function random_posts_options_page() {
 		
 		update_option(INGENI_RANDOM_POSTS_QTY, $_POST['random_posts_qty'] );
 		update_option(INGENI_RANDOM_CONTENT_URL, $_POST[INGENI_RANDOM_CONTENT_URL] );
+		update_option(INGENI_RANDOM_CATEGORY, $_POST[INGENI_RANDOM_CATEGORY] );
 		
 		switch ($_REQUEST['btn_random_posts_submit']) {
 			case ADD_RANDOM_POSTS :
-				$random_count = $ingeniRandomPosts->create_random_posts( get_option(INGENI_RANDOM_POSTS_QTY, 10), get_option(INGENI_RANDOM_CONTENT_URL, ''), $errMsg );
+				$random_count = $ingeniRandomPosts->create_random_posts( get_option(INGENI_RANDOM_POSTS_QTY, 10), get_option(INGENI_RANDOM_CONTENT_URL, ''), get_option(INGENI_RANDOM_CATEGORY, ''), $errMsg );
 				
 				if ( $random_count >= 0 ) {
 					echo('<div class="updated"><p><strong>'.$random_count.' posts created...</strong></p></div>');
@@ -110,10 +113,13 @@ function random_posts_options_page() {
 			echo('</tr>');
 			
 			echo('<tr valign="top">'); 
-				echo('<td style="width:250px;">Content geneator URL (leave blank for static content)</td><td><input type="text" style="width:100%;" name="'.INGENI_RANDOM_CONTENT_URL.'" value="'.get_option(INGENI_RANDOM_CONTENT_URL, 'https://litipsum.com/api/adventures-sherlock-holmes/p').'"></td>'); 
+				echo('<td style="width:250px;">Content geneator URL (leave blank for static content)</td><td><input type="text" style="width:100%;" name="'.INGENI_RANDOM_CONTENT_URL.'" value="'.get_option(INGENI_RANDOM_CONTENT_URL, 'https://litipsum.com/api/adventures-sherlock-holmes/10/p').'"></td>'); 
 			echo('</tr>');
-			
 
+			echo('<tr valign="top">'); 
+				echo('<td style="width:250px;">Category (leave blank for random)</td><td><input type="text" style="width:100%;" name="'.INGENI_RANDOM_CATEGORY.'" value="'.get_option(INGENI_RANDOM_CATEGORY, 'news').'"></td>'); 
+			echo('</tr>');			
+			
 			
 			echo('<tr valign="top">'); 
 				echo('<td><input type="submit" value="' . ADD_RANDOM_POSTS . '" name="btn_random_posts_submit"></td>');

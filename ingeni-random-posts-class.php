@@ -240,7 +240,7 @@ class IngeniRandomPosts {
 
 			$image_src = trailingslashit($upload_dir['url']) . $img_prefix.$img_suffix ;
 
-			$sql_query = $wpdb->prepare ( "SELECT id FROM wp_posts WHERE (post_mime_type='image/jpeg') AND (guid=%s)", $image_src );
+			$sql_query = $wpdb->prepare ( "SELECT id FROM '.$wpdb->prefix.'posts WHERE (post_mime_type='image/jpeg') AND (guid=%s)", $image_src );
 			$images = $wpdb->get_results( $sql_query );
 			
 			$image_id = -1;

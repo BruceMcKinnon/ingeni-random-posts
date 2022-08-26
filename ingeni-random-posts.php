@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Ingeni Create Random Posts
-Version: 2021.01
+Version: 2022.01
 Plugin URI: http://ingeni.net
 Author: Bruce McKinnon - ingeni.net
 Author URI: http://ingeni.net
@@ -30,6 +30,7 @@ v2019.02 - Added support for random content from litipsum.com - defaults to Sher
 v2019.03 - Bug fix - content wasn't random enough!
 v2019.04 - Added option to set a specific post category, rather than just using a random one.
 v2021.01 - Wasn't correctly handling the WP table prefix value - bad boy!
+v2022.01 - attach_random_image() - Formatting error in SQL statement.
 */
 
 const ADD_RANDOM_POSTS = "Add Random Posts";

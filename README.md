@@ -12,7 +12,7 @@ Requires at least: 3.8
 
 Tested up to: 5.2.2
 
-Stable tag: 2021.01
+Stable tag: 2022.01
 
 
 
@@ -78,3 +78,5 @@ v2019.03 - 4-Sep-2019 - Bug fix to correct not-so-random text.
 v2019.04 - 4-Sep-2019 - Added option to set a specific post category, rather than just using a random one.
 
 v2021.01 - 21 Dec 2021 - Wasn't correctly handling the WP table prefix value.
+
+v2022.01 - 26 Aug 2022 - attach_random_image() - Formatting error in SQL statement.
